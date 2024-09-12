@@ -8,59 +8,31 @@ import { api } from "../../../../convex/_generated/api";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FileCardActions } from "./file-actions";
 
-function UserCell({ userId }: { userId: Id<"users"> }) {
-  const userProfile = useQuery(api.users.getUserProfile, {
-    userId: userId,
-  });
-  return (
-    <div className="flex gap-2 text-xs text-gray-700 w-40 items-center">
-      <Avatar className="w-6 h-6">
-        <AvatarImage src={userProfile?.image} />
-        <AvatarFallback>CN</AvatarFallback>
-      </Avatar>
-      {userProfile?.name}
-    </div>
-  );
+interface ColumnProps {
+  row: {
+    original: {
+      _id: Id<"files">;
+      _creationTime: number;
+      shouldDelete?: boolean;
+      type: "image" | "csv" | "pdf";
+      name: string;
+      orgId: string;
+      fileId: Id<"_storage">;
+      userId: Id<"users">;
+      isFavorited: boolean;
+      // Ensure url is part of the type definition, even if nullable
+      url: string | null; 
+    } & { [key: string]: any }; // This line might be unnecessary depending on your usage
+  };
 }
 
-export const columns: ColumnDef<
-  Doc<"files"> & { url: string; isFavorited: boolean }
->[] = [
-  {
-    accessorKey: "name",
-    header: "Name",
-  },
-  {
-    accessorKey: "type",
-    header: "Type",
-  },
-  {
-    header: "User",
-    cell: ({ row }) => {
-      return <UserCell userId={row.original.userId} />;
-    },
-  },
-  {
-    header: "Uploaded On",
-    cell: ({ row }) => {
-      return (
-        <div>
-          {formatRelative(new Date(row.original._creationTime), new Date())}
-        </div>
-      );
-    },
-  },
-  {
-    header: "Actions",
-    cell: ({ row }) => {
-      return (
-        <div>
-          <FileCardActions
-            file={row.original}
-            isFavorited={row.original.isFavorited}
-          />
-        </div>
-      );
-    },
-  },
-];
+const Columns: React.FC<ColumnProps> = ({ row }) => {
+  return (
+    <div>
+      {/* ... other code */}
+      {row.original.url && ( <img src={row.original.url} alt={row.original.name} /> )}
+    </div>
+  );
+};
+
+export default Columns;

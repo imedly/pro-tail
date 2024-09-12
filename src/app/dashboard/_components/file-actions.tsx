@@ -34,7 +34,7 @@ export function FileCardActions({
   file,
   isFavorited,
 }: {
-  file: Doc<"files"> & { url: string | null };
+  file: Doc<"files"> & { url?: string | null | undefined};
   isFavorited: boolean;
 }) {
   const deleteFile = useMutation(api.files.deleteFile);
